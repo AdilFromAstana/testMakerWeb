@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "build",
+    "public": "build/index",
     "site": "adil-todo-app",
     "ignore": [
       "firebase.json",
