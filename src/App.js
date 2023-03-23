@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
-import TodoForm from './components/TodoForm';
-import TodoList from './components/TodoList';
+import React from 'react';
+import TestPage from './pages/TestPage';
+import './index.scss';
+import { ConfigProvider } from 'antd';
 
 const App = () => {
-
-  const [todoList, setTodoList] = useState([]);
-
-  return (
-    <div>
-      <TodoForm setTodoList={setTodoList} todoList={todoList} />
-      <TodoList todoList={todoList} />
-    </div>
-  );
+    return <TestPage />;
 };
 
 export default App;
