@@ -1,4 +1,5 @@
-import { Button, Card, Progress, Radio } from 'antd';
+import { Button, Card, Dropdown, Progress, Radio } from 'antd';
+import Title from 'antd/es/typography/Title';
 import React, { useEffect, useState } from 'react';
 import { Axios } from '../http';
 
@@ -12,6 +13,33 @@ const TestItem = ({ testInfo }) => {
     const [isTestFinished, setIsTestFinished] = useState(false);
 
     if (testInfo) {
+        const items = [
+            {
+                key: '1',
+                label: (
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+                        1st menu item
+                    </a>
+                ),
+            },
+            {
+                key: '2',
+                label: (
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
+                        2nd menu item
+                    </a>
+                ),
+            },
+            {
+                key: '3',
+                label: (
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
+                        3rd menu item
+                    </a>
+                ),
+            },
+        ];
+
         const { test, questionCount, testId } = testInfo;
 
         const progressInPercent = (100 / questionCount) * studentsAnswers.length;
@@ -123,7 +151,19 @@ const TestItem = ({ testInfo }) => {
                     </div>
                     <div>
                         <div>Ваш результат!</div>
-                        <Progress type="circle" percent={75} />
+                        <Progress
+                            type="circle"
+                            percent={testResult.correctAnswersInPercent}
+                            strokeColor={
+                                testResult.correctAnswersInPercent > 90
+                                    ? 'green'
+                                    : testResult.correctAnswersInPercent > 70
+                                    ? 'blue'
+                                    : testResult.correctAnswersInPercent > 50
+                                    ? 'yellow'
+                                    : 'red'
+                            }
+                        />
                     </div>
                 </div>
             );
@@ -131,55 +171,65 @@ const TestItem = ({ testInfo }) => {
 
         if (testInfo) {
             return (
-                <div style={{ width: '90vw', marginBottom: '20px', margin: '0 auto' }}>
-                    <Card>
-                        <h2>
-                            <b>{test[currentQuestion].questionText}</b>
-                        </h2>
-                        <Radio.Group style={{ width: '100%' }} value={choosedAnswer}>
-                            {test[currentQuestion].variants.map((variant) => {
-                                return (
-                                    <Card
-                                        style={{ cursor: 'pointer' }}
-                                        key={variant.id}
-                                        onClick={() => chooseAnswer(variant)}
-                                    >
-                                        <Radio key={variant.id} value={variant.id}>
-                                            {variant.answerText}
-                                        </Radio>
-                                    </Card>
-                                );
-                            })}
-                        </Radio.Group>
-                    </Card>
-                    <Progress percent={progressInPercent} />
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
+                <div
+                    style={{
+                        width: '90vw',
+                        margin: '0 auto',
+                        height: '90vh',
+                        display: 'grid',
+                        gridTemplateRows: '25% 1fr 15%',
+                    }}
+                >
+                    <Title level={window.screen.width > 992 ? 3 : 5}>{test[currentQuestion].questionText}</Title>
+
+                    <Radio.Group style={{ width: '100%' }} value={choosedAnswer}>
+                        {test[currentQuestion].variants.map((variant) => {
+                            return (
+                                <Card
+                                    style={{ cursor: 'pointer' }}
+                                    key={variant.id}
+                                    onClick={() => chooseAnswer(variant)}
+                                >
+                                    <Radio key={variant.id} value={variant.id}>
+                                        {variant.answerText}
+                                    </Radio>
+                                </Card>
+                            );
+                        })}
+                    </Radio.Group>
+                    <div>
+                        <Progress percent={progressInPercent.toFixed(2)} />
+                        <div style={{ display: 'grid', gridAutoFlow: 'column' }}>
+                            <div style={{ width: '300px' }}>
+                                <Button
+                                    size="large"
+                                    style={{ width: '150px' }}
+                                    disabled={currentQuestion === 0}
+                                    onClick={() => setCurrentQuestion(currentQuestion - 1)}
+                                >
+                                    Назад
+                                </Button>
+                                <Button
+                                    style={{ width: '150px' }}
+                                    size="large"
+                                    disabled={isLastQuestion}
+                                    onClick={() => {
+                                        return isLastQuestion ? null : setCurrentQuestion(currentQuestion + 1);
+                                    }}
+                                >
+                                    Следующий
+                                </Button>
+                            </div>
                             <Button
+                                style={{ width: '150px', justifySelf: 'end' }}
                                 size="large"
-                                disabled={currentQuestion === 0}
-                                onClick={() => setCurrentQuestion(currentQuestion - 1)}
+                                type="primary"
+                                disabled={studentsAnswers ? !isAllAnswered : true}
+                                onClick={finishTest}
                             >
-                                Назад
-                            </Button>
-                            <Button
-                                size="large"
-                                disabled={isLastQuestion}
-                                onClick={() => {
-                                    return isLastQuestion ? null : setCurrentQuestion(currentQuestion + 1);
-                                }}
-                            >
-                                Следующий
+                                Завершить
                             </Button>
                         </div>
-                        <Button
-                            size="large"
-                            type="primary"
-                            disabled={studentsAnswers ? !isAllAnswered : true}
-                            onClick={finishTest}
-                        >
-                            Завершить
-                        </Button>
                     </div>
                 </div>
             );
